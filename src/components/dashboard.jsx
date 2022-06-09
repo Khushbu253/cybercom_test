@@ -1,56 +1,58 @@
-import classes from "../app.module.css";
 import { DebounceInput } from "react-debounce-input";
 import axios from "axios";
-import { useEffect } from "react";
+import { useState } from "react";
+import classes from "../app.module.css";
+import { googleLogout } from "@react-oauth/google";
 
 const Dashboard = () => {
-  console.log("dashboard");
+  const [ipData, setIpData] = useState(undefined);
+  const [error, setError] = useState("");
+  const hasLogin=sessionStorage.getItem("login")
 
-  const getData = async () => {
-    const data = await axios.get("https://ipinfo.io/161.185.160.93/geo");
-    console.log(data);
+  const handleChange = async (event) => {
+    try {
+      const id = event.target.value;
+      if (id !== "") {
+        const res = await axios.get(`https://ipinfo.io/${id}/geo`);
+        const data = res;
+        setIpData(data.data);
+      } else {
+        setIpData(undefined);
+        setError("");
+      }
+    } catch (error) {
+      if (error) {
+        setError(error.response.data.error.message);
+      }
+    }
   };
-
-  useEffect(() => {
-    // Update the document title using the browser API
-    getData();
-  }, []);
-  const data = {
-    ip: "161.185.160.93",
-    city: "New York City",
-    region: "New York",
-    country: "US",
-    loc: "40.7143,-74.0060",
-    org: "AS22252 The City of New York",
-    postal: "10004",
-    timezone: "America/New_York",
-    readme: "https://ipinfo.io/missingauth",
-  };
-  //   const handleChange = (event) => {
-  //     const id = event.target.value;
-  //     //     axios.get(`https://ipinfo.io/${id}/geo`,config).then((resp) => {
-  //     //         console.log(resp.data);
-  //     //       }).catch((error)=>console.error(error));
-  //     //   }
   return (
     <div className={classes.container}>
+      {hasLogin ? <button className='g_id_signout' onClick={googleLogout}>
+          Logout
+        </button> : null}
       <h2>Wlcome to DashBoard</h2>
       <DebounceInput
         className={classes.input}
-        debounceTimeout={300}
-        placeholder="enter your IP Address"
-        // onChange={handleChange}
+        debounceTimeout={1000}
+        placeholder="Enter your IP Address"
+        onChange={handleChange}
       />
-       <h4> here is your IP Details...! </h4>
+      {ipData ? (
+        <p> here is your IP Details...! </p>
+      ) : (
+        <p className={classes.errorText}>{error}</p>
+      )}
       <div className={classes.table}>
-       
-        <table>
-          {Object.entries(data).map((key, val) => (
-            <tr>
-              <td>{key[0]}</td>
-              <td>{` :  ${key[1]}`}</td>
-            </tr>
-          ))}
+        <table className={classes.tableData}>
+          {ipData
+            ? Object.entries(ipData).map((key, val) => (
+                <tr>
+                  <td>{key[0]}</td>
+                  <td>{` :  ${key[1]}`}</td>
+                </tr>
+              ))
+            : null}
         </table>
       </div>
     </div>

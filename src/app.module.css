@@ -21,3 +21,6 @@
     flex-direction: column; 
     padding-left: 50px;
 }
+.errorText{
+    padding-top: 10px;
+}

@@ -12,13 +12,13 @@ const Login = () => {
   const navigate = useNavigate();
 
   const onLoginSuccess = (response) => {
-    console.log("success:", response);
     navigate("/dashboard");
+    sessionStorage.setItem("login",true)
     setLoginStatus(false);
   };
 
   const onFail = (res) => {
-    console.log("fail:", res);
+    alert("login fail");
   };
 
   return (
@@ -27,12 +27,6 @@ const Login = () => {
       {loginStatus ? (
         <GoogleOAuthProvider clientId={clientId}>
            <GoogleLogin onSuccess={onLoginSuccess} onFailure={onFail} />
-        </GoogleOAuthProvider>
-      ) : null}
-
-      {!loginStatus ? (
-        <GoogleOAuthProvider clientId={clientId}>
-
         </GoogleOAuthProvider>
       ) : null}
     </div>
