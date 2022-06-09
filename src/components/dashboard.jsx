@@ -3,11 +3,13 @@ import axios from "axios";
 import { useState } from "react";
 import classes from "../app.module.css";
 import { googleLogout } from "@react-oauth/google";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const [ipData, setIpData] = useState(undefined);
   const [error, setError] = useState("");
   const hasLogin=sessionStorage.getItem("login")
+  const navigate=useNavigate()
 
   const handleChange = async (event) => {
     try {
@@ -26,9 +28,14 @@ const Dashboard = () => {
       }
     }
   };
+
+  const handleLogout=()=>{
+    googleLogout();
+    navigate('/')
+  }
   return (
     <div className={classes.container}>
-      {hasLogin ? <button className='g_id_signout' onClick={googleLogout}>
+      {hasLogin ? <button className='g_id_signout' onClick={handleLogout}>
           Logout
         </button> : null}
       <h2>Wlcome to DashBoard</h2>
